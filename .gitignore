@@ -1,0 +1,39 @@
+# Node modules
+node_modules/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Environment variables
+.env
+
+# TypeScript
+*.tsbuildinfo
+
+# Docker
+docker-compose.override.yml
+docker-compose.debug.yml
+docker-compose.*
+Dockerfile
+*.docker
+
+# Build files
+dist/
+build/
+out/
+
+# Database
+*.sqlite
+*.db
+*.db-journal
+
+# IDEs and editors
+.vscode/
+.idea/
+.DS_Store
+
+# Other
+coverage/
+temp/
