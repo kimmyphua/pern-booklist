@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react'
 import { useMutation, useQuery } from '@apollo/client'
-import { CREATE_BOOK, GET_BOOKS } from '../data/books'
-import { GET_AUTHORS } from '../data/authors'
+import { CREATE_BOOK, GET_BOOKS } from '../../data/books'
+import { GET_AUTHORS } from '../../data/authors'
 
 const BookForm: React.FC = () => {
   const [title, setTitle] = useState('')
