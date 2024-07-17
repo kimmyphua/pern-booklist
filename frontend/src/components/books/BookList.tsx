@@ -1,9 +1,11 @@
 import React from 'react'
 import useSearch from '../../hooks/useSearch'
-import { useGetBooks } from '../../hooks/useGetBooks'
-import { useDeleteBook } from '../../hooks/useDeleteBook'
+import { useGetBooks } from './hooks/useGetBooks'
+import { useDeleteBook } from './hooks/useDeleteBook'
 import Table from 'components/table/Table'
 import { Link } from 'react-router-dom'
+import SearchInput from 'components/forms/SearchInput'
+import Select from 'components/forms/Select'
 
 interface Book {
   id: number
@@ -14,14 +16,19 @@ interface Book {
 }
 
 const BookList: React.FC = () => {
-  const { searchText, handleInputChange, clearSearchText } = useSearch()
-  const { loading, error, data, handleTextChange } = useGetBooks()
+  const {
+    loading,
+    error,
+    data,
+    onInputSearch,
+    title,
+    author,
+    setAuthor,
+    authorOptions
+  } = useGetBooks()
   const { handleDelete } = useDeleteBook()
 
-  if (loading) return <p>Loading...</p>
-  if (error) return <p>Error :(</p>
-
-  const bookData = data.searchBooks
+  const bookData = (data as { searchBooks: Book[] })?.searchBooks
   const columns = [
     {
       header: 'Title',
@@ -52,31 +59,26 @@ const BookList: React.FC = () => {
   ]
 
   return (
-    <div>
-      <input
-        placeholder="Search Book Title"
-        value={searchText}
-        onChange={handleInputChange}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter') {
-            handleTextChange(searchText)
-          }
-        }}
+    <div className="mx-10 mt-5">
+      <div className="flex gap-2 my-2">
+        <SearchInput handleTextChange={onInputSearch} value={title} />
+        <Select
+          value={author?.value ?? ''}
+          onChange={(e) => {
+            const selected = authorOptions.find(
+              (a) => a.value === e.target.value
+            )
+            if (selected) setAuthor(selected)
+          }}
+          options={authorOptions}
+        />
+      </div>
+      <Table
+        data={bookData}
+        columns={columns}
+        loading={loading}
+        error={error != null}
       />
-      <button
-        onClick={() => {
-          handleTextChange(searchText)
-        }}>
-        search
-      </button>
-      <button
-        onClick={() => {
-          clearSearchText()
-          handleTextChange('')
-        }}>
-        clear
-      </button>
-      <Table data={bookData} columns={columns} />
     </div>
   )
 }

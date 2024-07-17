@@ -1,16 +1,18 @@
 import React, { useState } from 'react'
 
-interface Column {
-  header: string
-  accessor: string
-  render?: (item: Record<string, any>) => React.ReactNode
-}
+// interface Column {
+//   header: string
+//   accessor: string
+//   render?: (item: Record<string, any>) => React.ReactNode | JSX.Element
+// }
 interface TableProps {
   data: Record<string, any>[]
-  columns: Column[]
+  columns: any[]
   paginate?: boolean
   pageSize?: number
   sortable?: boolean
+  loading?: boolean
+  error?: boolean
 }
 
 export const Table: React.FC<TableProps> = ({
@@ -18,7 +20,9 @@ export const Table: React.FC<TableProps> = ({
   columns,
   paginate = false,
   pageSize = 10,
-  sortable = false
+  sortable = false,
+  loading = false,
+  error = false
 }) => {
   const [currentPage, setCurrentPage] = useState(1)
 
@@ -50,6 +54,8 @@ export const Table: React.FC<TableProps> = ({
     // Implement sorting logic here
     // Example: Sort data based on the selected header
   }
+  if (loading) return <p>Loading...</p>
+  if (error) return <p>Error :(</p>
   return (
     <div className="overflow-x-auto">
       <table className="min-w-full bg-white border-collapse shadow-md">

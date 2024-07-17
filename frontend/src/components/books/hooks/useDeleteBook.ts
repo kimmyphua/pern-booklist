@@ -1,5 +1,5 @@
 import { useMutation } from '@apollo/client'
-import { DELETE_BOOK, GET_BOOKS } from '../data/books'
+import { DELETE_BOOK, GET_BOOKS } from 'data/books'
 import { useCallback } from 'react'
 
 export const useDeleteBook = () => {
