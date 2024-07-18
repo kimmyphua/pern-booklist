@@ -7,9 +7,6 @@ import type { InputGroupProps } from './InputGroup'
 import { isDefined } from 'utils/helpers'
 import { ReactComponent as SearchIcon } from '../icons/search.svg'
 interface Props extends InputGroupProps {
-  /**
-   * Event handler function, called on text change
-   */
   handleTextChange?: (event: { value: string }) => void
 }
 

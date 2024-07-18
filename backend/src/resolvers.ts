@@ -14,16 +14,23 @@ export const resolvers = {
     getBooks: async () => await bookRepository.find({ relations: ['author'] }),
     getBook: async (_: any, { id }: { id: number }) =>
       await bookRepository.findOne({ where: { id }, relations: ['author'] }),
+    searchAuthors: async (_: any, { name }: { name?: string }) => {
+      const query = authorRepository
+        .createQueryBuilder('author')
+        .leftJoinAndSelect('author.books', 'books')
+      if (name) query.andWhere('author.name ILIKE :name', { name: `%${name}%` })
+      return await query.getMany()
+    },
     searchBooks: async (
       _: any,
       {
         title,
-        author,
+        authorId,
         yearPublished,
         noOfPages
       }: {
         title?: string
-        author?: string
+        authorId?: number
         yearPublished?: number
         noOfPages?: number
       }
@@ -33,8 +40,7 @@ export const resolvers = {
         .leftJoinAndSelect('book.author', 'author')
       if (title)
         query.andWhere('book.title ILIKE :title', { title: `%${title}%` })
-      if (author)
-        query.andWhere('author.name ILIKE :author', { author: `%${author}%` })
+      if (authorId) query.andWhere('author.id = :authorId', { authorId })
       if (yearPublished)
         query.andWhere('book.yearPublished = :yearPublished', { yearPublished })
       if (noOfPages)

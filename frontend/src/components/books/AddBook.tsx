@@ -1,7 +1,12 @@
 import React from 'react'
+import BookForm from './BookForm'
 
 function AddBook() {
-  return <div>AddBook</div>
+  return (
+    <div>
+      <BookForm />
+    </div>
+  )
 }
 
 export default AddBook

@@ -48,7 +48,8 @@ const InputGroup = forwardRef<HTMLInputElement, InputGroupProps>(
     return (
       <div
         className={classNames(
-          'flex', 'max-w-[300px]',
+          'flex',
+          'w-full',
           {
             'opacity-50 cursor-not-allowed': disabled
           },
@@ -56,7 +57,7 @@ const InputGroup = forwardRef<HTMLInputElement, InputGroupProps>(
         )}>
         {prefix && (
           <div className="flex">
-            <span className="flex items-center px-2 py-2 text-sm leading-tight text-gray-700 bg-white border border-r-0 border-gray-300 rounded-l-md">
+            <span className="flex items-center px-2 py-2 text-base leading-tight text-gray-700 bg-white border border-r-0 border-gray-300 rounded-l-md">
               {prefix}
             </span>
           </div>
@@ -64,7 +65,7 @@ const InputGroup = forwardRef<HTMLInputElement, InputGroupProps>(
         <input
           ref={ref}
           className={classNames(
-            'flex-1 px-2 py-2 text-sm leading-tight border border-gray-300 rounded focus:border-blue-500',
+            'flex-1 px-4 py-2 text-base leading-tight border border-gray-300 rounded focus:border-blue-500',
             {
               'border-l-0 rounded-l-none': prefix,
               'border-r-0 rounded-r-none': suffix
@@ -75,7 +76,7 @@ const InputGroup = forwardRef<HTMLInputElement, InputGroupProps>(
         />
         {suffix && (
           <div className="flex">
-            <span className="flex items-center px-2 py-2 text-sm leading-tight text-gray-700 bg-white border border-l-0 border-gray-300 rounded-r-md">
+            <span className="flex items-center px-2 py-2 text-base leading-tight text-gray-700 bg-white border border-l-0 border-gray-300 rounded-r-md">
               {suffix}
             </span>
           </div>

@@ -1,10 +1,22 @@
 import { gql } from '@apollo/client'
 
 export const CREATE_BOOK = gql`
-  mutation CreateBook($title: String!, $authorId: ID!) {
-    createBook(title: $title, authorId: $authorId) {
+  mutation CreateBook(
+    $title: String!
+    $authorId: ID!
+    $yearPublished: Int
+    $noOfPages: Int
+  ) {
+    createBook(
+      title: $title
+      authorId: $authorId
+      yearPublished: $yearPublished
+      noOfPages: $noOfPages
+    ) {
       id
       title
+      yearPublished
+      noOfPages
       author {
         name
       }
@@ -54,13 +66,13 @@ export const UPDATE_BOOK = gql`
 export const GET_BOOKS = gql`
   query GetBooks(
     $title: String
-    $author: String
+    $authorId: ID
     $yearPublished: Int
     $noOfPages: Int
   ) {
     searchBooks(
       title: $title
-      author: $author
+      authorId: $authorId
       yearPublished: $yearPublished
       noOfPages: $noOfPages
     ) {

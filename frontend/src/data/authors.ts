@@ -22,3 +22,18 @@ export const GET_AUTHORS = gql`
     }
   }
 `
+
+export const SEARCH_AUTHORS = gql`
+  query SearchAuthors($name: String) {
+    searchAuthors(name: $name) {
+      id
+      name
+      books {
+        title
+        id
+        yearPublished
+        noOfPages
+      }
+    }
+  }
+`

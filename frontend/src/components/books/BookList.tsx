@@ -1,11 +1,11 @@
 import React from 'react'
-import useSearch from '../../hooks/useSearch'
 import { useGetBooks } from './hooks/useGetBooks'
 import { useDeleteBook } from './hooks/useDeleteBook'
 import Table from 'components/table/Table'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import SearchInput from 'components/forms/SearchInput'
 import Select from 'components/forms/Select'
+import Button from 'components/button/Button'
 
 interface Book {
   id: number
@@ -16,6 +16,7 @@ interface Book {
 }
 
 const BookList: React.FC = () => {
+  const navigate = useNavigate()
   const {
     loading,
     error,
@@ -60,18 +61,26 @@ const BookList: React.FC = () => {
 
   return (
     <div className="mx-10 mt-5">
-      <div className="flex gap-2 my-2">
-        <SearchInput handleTextChange={onInputSearch} value={title} />
-        <Select
-          value={author?.value ?? ''}
-          onChange={(e) => {
-            const selected = authorOptions.find(
-              (a) => a.value === e.target.value
-            )
-            if (selected) setAuthor(selected)
-          }}
-          options={authorOptions}
-        />
+      <div className="flex flex-col sm:flex-row sm:justify-between gap-2 my-2">
+        <div className="flex flex-col sm:flex-row gap-2 w-6/12">
+          <SearchInput handleTextChange={onInputSearch} value={title} />
+          <Select
+            value={author?.value ?? ''}
+            onChange={(e) => {
+              const selected = authorOptions.find(
+                (a) => a.value === e.target.value
+              )
+              if (selected) setAuthor(selected)
+            }}
+            options={authorOptions}
+          />
+        </div>
+        <Button
+          type="submit"
+          variant={'teal'}
+          onClick={() => navigate('/books/add')}>
+          Add Book
+        </Button>
       </div>
       <Table
         data={bookData}

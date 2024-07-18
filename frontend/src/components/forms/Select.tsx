@@ -16,7 +16,7 @@ const Select: React.FC<SelectProps> = ({
   disabled = false
 }) => {
   return (
-    <div className="relative inline-block w-full max-w-xs">
+    <div className="relative inline-block w-full">
       <select
         value={value}
         onChange={onChange}

@@ -68,9 +68,10 @@ export const typeDefs = gql`
     getAuthor(id: ID!): Author
     getBooks: [Book]
     getBook(id: ID!): Book
+    searchAuthors(name: String): [Author]
     searchBooks(
       title: String
-      author: String
+      authorId: ID
       yearPublished: Int
       noOfPages: Int
     ): [Book]
