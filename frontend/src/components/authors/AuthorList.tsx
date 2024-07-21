@@ -47,7 +47,7 @@ function AuthorList() {
           type="submit"
           variant={'teal'}
           onClick={() => navigate('/authors/add')}>
-          Add Book
+          Add Author
         </Button>
       </div>
       <Table

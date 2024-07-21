@@ -1,96 +1,71 @@
-import React, { useCallback, useState } from 'react'
-import { useMutation } from '@apollo/client'
-import { CREATE_BOOK, GET_BOOKS } from '../../data/books'
+import React from 'react'
 import useGetAuthorOptions from 'components/authors/hooks/useGetAuthorOptions'
 import Select from 'components/forms/Select'
-import useFilterByOptions from 'hooks/useFilterByOptions'
 import InputGroup from 'components/forms/InputGroup'
 import Button from 'components/button/Button'
+import {
+  CreateBook,
+  DEFAULT_SELECTED_AUTHOR_VALUE,
+  UpdateBook
+} from './constants'
+import { Option } from 'utils/types'
 
-interface CreateBook {
-  title: string
-  yearPublished?: number | null
-  noOfPages?: number | null
+interface BookFormProps {
+  handleSubmit: React.FormEventHandler<HTMLFormElement>
+  book: CreateBook | UpdateBook
+  handleAuthorChange: (val: Option) => void
+  handleBookChange: (name: string, value: number | string) => void
+  author: Option<string> | undefined
 }
-
-const DEFAULT_SELECTED_VALUE = {
-  label: 'Choose an author',
-  value: ''
-}
-
-const DEFAULT_BOOK_INPUT = {
-  title: '',
-  yearPublished: null,
-  noOfPages: null
-}
-const BookForm: React.FC = () => {
+const BookForm = (props: BookFormProps) => {
+  const { handleSubmit, book, author, handleAuthorChange, handleBookChange } =
+    props
   const { authorOptions, authorsIsLoading } = useGetAuthorOptions()
 
-  const [book, setBook] = useState<CreateBook>(DEFAULT_BOOK_INPUT)
-
-  const [author, setAuthor] = useFilterByOptions(DEFAULT_SELECTED_VALUE)
-
-  const [createBook] = useMutation(CREATE_BOOK, {
-    refetchQueries: [
-      {
-        query: GET_BOOKS,
-        variables: {
-          title: '',
-          authorId: null,
-          yearPublished: null,
-          noOfPages: null
-        }
-      }
-    ]
-  })
-  const handleSubmit = useCallback(
-    (e: React.FormEvent) => {
-      console.log({ book })
-
-      e.preventDefault()
-      createBook({ variables: { ...book, authorId: author?.value } })
-      setAuthor(DEFAULT_SELECTED_VALUE)
-      setBook(DEFAULT_BOOK_INPUT)
-    },
-    [author?.value, book, createBook, setAuthor]
-  )
-
-  const authorList = [DEFAULT_SELECTED_VALUE, ...authorOptions]
+  const authorList = [DEFAULT_SELECTED_AUTHOR_VALUE, ...authorOptions]
   return (
     <div className="flex items-center justify-center p-10">
       <form
         onSubmit={handleSubmit}
         className="flex flex-col items-center gap-5 w-6/12">
         <InputGroup
+          prefix="Title :"
+          name="title"
           type="text"
-          placeholder="Title"
+          placeholder="e.g. Book Title"
           value={book.title}
-          onChange={(e) => setBook({ ...book, title: e.target.value })}
+          onChange={(e) => {
+            handleBookChange(e.target.name, e.target.value)
+          }}
         />
         <Select
           value={author?.value ?? ''}
           onChange={(e) => {
             const selected = authorList.find((a) => a.value === e.target.value)
-            if (selected) setAuthor(selected)
+            if (selected) handleAuthorChange(selected)
           }}
           options={authorList}
           disabled={authorsIsLoading}
         />
         <InputGroup
+          prefix="Year Published :"
+          name="yearPublished"
           type="number"
-          placeholder="Year Published"
+          placeholder="e.g. 2011"
           value={(book.yearPublished ?? '').toString()}
-          onChange={(e) =>
-            setBook({ ...book, yearPublished: Number(e.target.value) })
-          }
+          onChange={(e) => {
+            handleBookChange(e.target.name, Number(e.target.value))
+          }}
         />
         <InputGroup
+          prefix="Pages"
+          name="noOfPages"
           type="number"
-          placeholder="Pages"
+          placeholder="e.g. 1000"
           value={(book.noOfPages ?? '').toString()}
-          onChange={(e) =>
-            setBook({ ...book, noOfPages: Number(e.target.value) })
-          }
+          onChange={(e) => {
+            handleBookChange(e.target.name, Number(e.target.value))
+          }}
         />
         <Button
           type="submit"

@@ -87,3 +87,18 @@ export const GET_BOOKS = gql`
     }
   }
 `
+
+export const GET_BOOK = gql`
+  query GetBook($id: ID!) {
+    getBook(id: $id) {
+      id
+      title
+      author {
+        name
+        id
+      }
+      yearPublished
+      noOfPages
+    }
+  }
+`

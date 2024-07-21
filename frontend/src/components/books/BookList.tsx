@@ -35,7 +35,7 @@ const BookList: React.FC = () => {
       header: 'Title',
       accessor: '',
       render: (data: Book) => (
-        <Link to={`/books/${data?.id}`}>{data?.title}</Link>
+        <Link to={`/books/${data?.id}/edit`}>{data?.title}</Link>
       )
     },
     {
