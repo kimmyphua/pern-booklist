@@ -21,6 +21,7 @@ export const resolvers = {
       if (name) query.andWhere('author.name ILIKE :name', { name: `%${name}%` })
       return await query.getMany()
     },
+    // TODO: make year and pages a range
     searchBooks: async (
       _: any,
       {
@@ -31,8 +32,14 @@ export const resolvers = {
       }: {
         title?: string
         authorId?: number
-        yearPublished?: number
-        noOfPages?: number
+        yearPublished?: {
+          start?: number
+          end?: number
+        }
+        noOfPages?: {
+          start?: number
+          end?: number
+        }
       }
     ) => {
       const query = bookRepository
@@ -41,10 +48,32 @@ export const resolvers = {
       if (title)
         query.andWhere('book.title ILIKE :title', { title: `%${title}%` })
       if (authorId) query.andWhere('author.id = :authorId', { authorId })
-      if (yearPublished)
-        query.andWhere('book.yearPublished = :yearPublished', { yearPublished })
-      if (noOfPages)
-        query.andWhere('book.noOfPages = :noOfPages', { noOfPages })
+      if (yearPublished) {
+        if (yearPublished.start) {
+          query.andWhere('book.yearPublished >= :yearPublishedStart', {
+            yearPublishedStart: yearPublished.start
+          })
+        }
+        if (yearPublished.end) {
+          query.andWhere('book.yearPublished <= :yearPublishedEnd', {
+            yearPublishedEnd: yearPublished.end
+          })
+        }
+      }
+
+      if (noOfPages) {
+        if (noOfPages.start) {
+          query.andWhere('book.noOfPages >= :noOfPagesStart', {
+            noOfPagesStart: noOfPages.start
+          })
+        }
+        if (noOfPages.end) {
+          query.andWhere('book.noOfPages <= :noOfPagesEnd', {
+            noOfPagesEnd: noOfPages.end
+          })
+        }
+      }
+
       return await query.getMany()
     }
   },

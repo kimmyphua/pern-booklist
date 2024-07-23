@@ -63,6 +63,11 @@ export const typeDefs = gql`
     noOfPages: Int
   }
 
+  input RangeInput {
+    start: Int
+    end: Int
+  }
+
   type Query {
     getAuthors: [Author]
     getAuthor(id: ID!): Author
@@ -72,8 +77,8 @@ export const typeDefs = gql`
     searchBooks(
       title: String
       authorId: ID
-      yearPublished: Int
-      noOfPages: Int
+      yearPublished: RangeInput
+      noOfPages: RangeInput
     ): [Book]
   }
 
