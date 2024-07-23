@@ -1,11 +1,3 @@
-// if (typeof (global as any).Event === 'undefined') {
-//   ;(global as any).Event = class {
-//     type: string
-//     constructor(type: string) {
-//       this.type = type
-//     }
-//   }
-// }
 import 'reflect-metadata'
 import './polyfills'
 import express from 'express'

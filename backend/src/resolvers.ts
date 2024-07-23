@@ -1,6 +1,7 @@
 import { Repository } from 'typeorm'
 import { Author, Book } from './schema'
 import { AppDataSource } from './data-source'
+import { addRangeCondition } from './utils/helpers'
 
 const authorRepository: Repository<Author> = AppDataSource.getRepository(Author)
 const bookRepository: Repository<Book> = AppDataSource.getRepository(Book)
@@ -21,7 +22,6 @@ export const resolvers = {
       if (name) query.andWhere('author.name ILIKE :name', { name: `%${name}%` })
       return await query.getMany()
     },
-    // TODO: make year and pages a range
     searchBooks: async (
       _: any,
       {
@@ -48,31 +48,9 @@ export const resolvers = {
       if (title)
         query.andWhere('book.title ILIKE :title', { title: `%${title}%` })
       if (authorId) query.andWhere('author.id = :authorId', { authorId })
-      if (yearPublished) {
-        if (yearPublished.start) {
-          query.andWhere('book.yearPublished >= :yearPublishedStart', {
-            yearPublishedStart: yearPublished.start
-          })
-        }
-        if (yearPublished.end) {
-          query.andWhere('book.yearPublished <= :yearPublishedEnd', {
-            yearPublishedEnd: yearPublished.end
-          })
-        }
-      }
 
-      if (noOfPages) {
-        if (noOfPages.start) {
-          query.andWhere('book.noOfPages >= :noOfPagesStart', {
-            noOfPagesStart: noOfPages.start
-          })
-        }
-        if (noOfPages.end) {
-          query.andWhere('book.noOfPages <= :noOfPagesEnd', {
-            noOfPagesEnd: noOfPages.end
-          })
-        }
-      }
+      addRangeCondition(query, 'book.yearPublished', yearPublished)
+      addRangeCondition(query, 'book.noOfPages', noOfPages)
 
       return await query.getMany()
     }
