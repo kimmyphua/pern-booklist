@@ -4,33 +4,12 @@ import type { ReactNode } from 'react'
 
 export interface InputGroupProps
   extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'prefix'> {
-  /**
-   * Event handler function, called on input change
-   */
   handleChange?: React.ChangeEventHandler<HTMLInputElement>
-  /**
-   * Input type
-   */
   type?: React.HTMLInputTypeAttribute
-  /**
-   * Id
-   */
   id?: string
-  /**
-   * Name
-   */
   name?: string
-  /**
-   * Placeholder
-   */
   placeholder?: string
-  /**
-   * Prefix
-   */
   prefix?: ReactNode
-  /**
-   * Suffix
-   */
   suffix?: ReactNode
 }
 
@@ -87,9 +66,5 @@ const InputGroup = forwardRef<HTMLInputElement, InputGroupProps>(
 )
 
 InputGroup.displayName = 'InputGroup'
-
-InputGroup.defaultProps = {
-  type: 'text'
-}
 
 export default InputGroup

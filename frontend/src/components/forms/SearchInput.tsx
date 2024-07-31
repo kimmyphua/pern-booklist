@@ -47,7 +47,7 @@ const SearchInput: FunctionComponent<Props> = (props) => {
 
   const handleKeyDown = (ev: React.KeyboardEvent<HTMLInputElement>) => {
     // Clear on escape key
-    if (ev.keyCode === 27 && !!value) {
+    if (ev.key === 'Escape' && !!value) {
       handleClear()
     }
   }

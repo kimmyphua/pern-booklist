@@ -46,6 +46,7 @@ const BookForm = (props: BookFormProps) => {
           }}
           options={authorList}
           disabled={authorsIsLoading}
+          prefix={'Author :'}
         />
         <InputGroup
           prefix="Year Published :"
@@ -58,7 +59,7 @@ const BookForm = (props: BookFormProps) => {
           }}
         />
         <InputGroup
-          prefix="Pages"
+          prefix="Pages :"
           name="noOfPages"
           type="number"
           placeholder="e.g. 1000"

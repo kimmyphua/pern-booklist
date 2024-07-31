@@ -25,7 +25,8 @@ const BookList: React.FC = () => {
     title,
     author,
     setAuthor,
-    authorOptions
+    authorOptions,
+    refetch
   } = useGetBooks()
   const { handleDelete } = useDeleteBook()
 
@@ -54,7 +55,9 @@ const BookList: React.FC = () => {
       header: 'Actions',
       accessor: 'id',
       render: (id: number) => (
-        <button onClick={() => handleDelete(id)}>Delete</button>
+        <button onClick={() => handleDelete(id).then(() => refetch())}>
+          Delete
+        </button>
       )
     }
   ]

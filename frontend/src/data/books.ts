@@ -67,8 +67,8 @@ export const GET_BOOKS = gql`
   query GetBooks(
     $title: String
     $authorId: ID
-    $yearPublished: Int
-    $noOfPages: Int
+    $yearPublished: RangeInput
+    $noOfPages: RangeInput
   ) {
     searchBooks(
       title: $title

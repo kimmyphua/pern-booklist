@@ -118,8 +118,8 @@ export const resolvers = {
         if (!author) throw new Error('Author not found')
         book.author = author
       }
-      if (yearPublished !== undefined) book.yearPublished = yearPublished
-      if (noOfPages !== undefined) book.noOfPages = noOfPages
+      if (yearPublished != null) book.yearPublished = yearPublished
+      if (noOfPages != null) book.noOfPages = noOfPages
       return await bookRepository.save(book)
     },
     deleteBook: async (_: any, { id }: { id: number }) => {

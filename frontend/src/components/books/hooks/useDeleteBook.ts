@@ -17,8 +17,8 @@ export const useDeleteBook = () => {
     ]
   })
   const handleDelete = useCallback(
-    (id: number) => {
-      deleteBook({ variables: { deleteBookId: Number(id) } })
+    async (id: number) => {
+      await deleteBook({ variables: { deleteBookId: Number(id) } })
     },
     [deleteBook]
   )

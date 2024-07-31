@@ -21,15 +21,15 @@ export const useGetBooks = () => {
 
   const [yearPublished, setYearPublished] = useState(null)
   const [noOfPages, setNoPages] = useState(null)
-  const { loading, error, data } = useQuery(GET_BOOKS, {
+  const { loading, error, data, refetch } = useQuery(GET_BOOKS, {
     variables: {
       title,
       authorId: author?.value === '' ? null : author?.value,
       yearPublished,
       noOfPages
-    }
+    },
+    fetchPolicy: 'network-only'
   })
-
   return {
     loading,
     error,
@@ -38,6 +38,7 @@ export const useGetBooks = () => {
     title,
     setAuthor,
     author,
-    authorOptions: [...authorOptions, DEFAULT_OPTION]
+    authorOptions: [...authorOptions, DEFAULT_OPTION],
+    refetch
   }
 }

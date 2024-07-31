@@ -43,12 +43,10 @@ export const Table: React.FC<TableProps> = ({
       accessor === ''
         ? item
         : accessor.split('.').reduce((acc, curr) => acc[curr], item)
-    console.log({ result })
 
     if (render) return render(result)
     return result ?? '-'
   }
-  console.log({ paginatedData })
 
   const handleSort = (header: string) => {
     // Implement sorting logic here
