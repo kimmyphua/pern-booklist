@@ -1,56 +1,51 @@
-import classNames from 'classnames'
-import React, { useState, useCallback, useLayoutEffect } from 'react'
-import type { FunctionComponent } from 'react'
+import classNames from 'classnames';
+import React, { useState, useCallback, useLayoutEffect } from 'react';
+import type { FunctionComponent } from 'react';
 
-import InputGroup from './InputGroup'
-import type { InputGroupProps } from './InputGroup'
-import { isDefined } from 'utils/helpers'
-import { ReactComponent as SearchIcon } from '../icons/search.svg'
+import InputGroup from './InputGroup';
+import type { InputGroupProps } from './InputGroup';
+import { isDefined } from 'utils/helpers';
+import { ReactComponent as SearchIcon } from '../icons/search.svg';
 interface Props extends InputGroupProps {
-  handleTextChange?: (event: { value: string }) => void
+  handleTextChange?: (event: { value: string }) => void;
 }
 
 const SearchInput: FunctionComponent<Props> = (props) => {
-  const {
-    className = '',
-    handleTextChange,
-    value: valueFromProps,
-    ...otherProps
-  } = props
-  const { disabled } = otherProps
-  const [value, setValue] = useState(valueFromProps ?? '')
+  const { className = '', handleTextChange, value: valueFromProps, ...otherProps } = props;
+  const { disabled } = otherProps;
+  const [value, setValue] = useState(valueFromProps ?? '');
 
-  const isControlled = isDefined(valueFromProps)
+  const isControlled = isDefined(valueFromProps);
 
   useLayoutEffect(() => {
     if (isControlled) {
-      setValue(valueFromProps)
+      setValue(valueFromProps);
     }
-  }, [isControlled, valueFromProps])
+  }, [isControlled, valueFromProps]);
 
   const handleInputChange = useCallback(
     (ev: React.ChangeEvent<HTMLInputElement>) => {
       if (!isControlled) {
-        setValue(ev.target.value)
+        setValue(ev.target.value);
       }
-      handleTextChange?.({ value: ev.target.value })
+      handleTextChange?.({ value: ev.target.value });
     },
     [isControlled, handleTextChange]
-  )
+  );
 
   const handleClear = useCallback(() => {
     if (!isControlled) {
-      setValue('')
+      setValue('');
     }
-    handleTextChange?.({ value: '' })
-  }, [isControlled, handleTextChange])
+    handleTextChange?.({ value: '' });
+  }, [isControlled, handleTextChange]);
 
   const handleKeyDown = (ev: React.KeyboardEvent<HTMLInputElement>) => {
     // Clear on escape key
     if (ev.key === 'Escape' && !!value) {
-      handleClear()
+      handleClear();
     }
-  }
+  };
 
   return (
     <InputGroup
@@ -64,7 +59,8 @@ const SearchInput: FunctionComponent<Props> = (props) => {
               'flex items-center justify-center', // Flex container
               { 'cursor-pointer filter brightness-75': !disabled } // Apply pointer cursor and brightness on hover if not disabled
             )}
-            onClick={disabled ? undefined : handleClear}>
+            onClick={disabled ? undefined : handleClear}
+          >
             <> x </>
           </span>
         )
@@ -74,9 +70,9 @@ const SearchInput: FunctionComponent<Props> = (props) => {
       value={value}
       {...otherProps}
     />
-  )
-}
+  );
+};
 
-SearchInput.displayName = 'SearchInput'
+SearchInput.displayName = 'SearchInput';
 
-export default SearchInput
+export default SearchInput;

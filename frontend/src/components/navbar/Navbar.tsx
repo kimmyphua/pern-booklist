@@ -1,5 +1,5 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
+import React from 'react';
+import { Link } from 'react-router-dom';
 
 const Navbar: React.FC = () => {
   return (
@@ -11,22 +11,16 @@ const Navbar: React.FC = () => {
           </Link>
         </div>
         <div className="space-x-4">
-          <Link
-            to="/authors"
-            relative="path"
-            className="text-gray-300 hover:text-white">
+          <Link to="/authors" relative="path" className="text-gray-300 hover:text-white">
             Authors
           </Link>
-          <Link
-            to="/books"
-            relative="path"
-            className="text-gray-300 hover:text-white">
+          <Link to="/books" relative="path" className="text-gray-300 hover:text-white">
             Books
           </Link>
         </div>
       </div>
     </nav>
-  )
-}
+  );
+};
 
-export default Navbar
+export default Navbar;

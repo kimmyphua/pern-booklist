@@ -1,27 +1,38 @@
-import React from 'react'
-import { ApolloProvider, InMemoryCache, ApolloClient } from '@apollo/client'
-import './App.css'
-import AuthorList from './components/authors/AuthorList'
-import AddAuthor from './components/authors/AddAuthor'
-import EditAuthor from './components/authors/EditAuthor'
-import AuthorDetail from './components/authors/AuthorDetail'
-import BookList from './components/books/BookList'
-import AddBook from './components/books/AddBook'
-import EditBook from './components/books/EditBook'
-import BookDetail from './components/books/BookDetail'
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Navigate
-} from 'react-router-dom'
-import Navbar from 'components/navbar/Navbar'
-import { Suspense } from 'react'
+import { ApolloClient, ApolloProvider, createHttpLink, InMemoryCache } from '@apollo/client';
+import { setContext } from '@apollo/client/link/context';
+import Navbar from 'components/navbar/Navbar';
+import React, { Suspense } from 'react';
+import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router-dom';
+import './App.css';
+import AddAuthor from './components/authors/AddAuthor';
+import AuthorDetail from './components/authors/AuthorDetail';
+import AuthorList from './components/authors/AuthorList';
+import EditAuthor from './components/authors/EditAuthor';
+import AddBook from './components/books/AddBook';
+import BookDetail from './components/books/BookDetail';
+import BookList from './components/books/BookList';
+import EditBook from './components/books/EditBook';
+
+const httpLink = createHttpLink({
+  uri: 'http://localhost:4000/graphql',
+});
+
+const authLink = setContext((_, { headers }) => {
+  // get the authentication token from local storage if it exists
+  const token = localStorage.getItem('token') ?? '123';
+  // return the headers to the context so httpLink can read them
+  return {
+    headers: {
+      ...headers,
+      authorization: `Bearer ${token}`,
+    },
+  };
+});
 
 const client = new ApolloClient({
-  uri: 'http://localhost:4000/graphql',
-  cache: new InMemoryCache()
-})
+  link: authLink.concat(httpLink),
+  cache: new InMemoryCache(),
+});
 
 const App: React.FC = () => (
   <ApolloProvider client={client}>
@@ -49,6 +60,6 @@ const App: React.FC = () => (
       </Suspense>
     </div>
   </ApolloProvider>
-)
+);
 
-export default App
+export default App;

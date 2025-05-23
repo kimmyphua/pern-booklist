@@ -1,6 +1,6 @@
-import { useMutation } from '@apollo/client'
-import { DELETE_BOOK, GET_BOOKS } from 'data/books'
-import { useCallback } from 'react'
+import { useMutation } from '@apollo/client';
+import { DELETE_BOOK, GET_BOOKS } from 'data/books';
+import { useCallback } from 'react';
 
 export const useDeleteBook = () => {
   const [deleteBook] = useMutation(DELETE_BOOK, {
@@ -11,19 +11,19 @@ export const useDeleteBook = () => {
           title: '',
           author: null,
           yearPublished: null,
-          noOfPages: null
-        }
-      }
-    ]
-  })
+          noOfPages: null,
+        },
+      },
+    ],
+  });
   const handleDelete = useCallback(
     async (id: number) => {
-      await deleteBook({ variables: { deleteBookId: Number(id) } })
+      await deleteBook({ variables: { deleteBookId: Number(id) } });
     },
     [deleteBook]
-  )
+  );
 
   return {
-    handleDelete
-  }
-}
+    handleDelete,
+  };
+};

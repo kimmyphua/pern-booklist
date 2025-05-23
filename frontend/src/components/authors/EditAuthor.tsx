@@ -1,7 +1,7 @@
-import React from 'react'
+import React from 'react';
 
 function EditAuthor() {
-  return <div>EditAuthor</div>
+  return <div>EditAuthor</div>;
 }
 
-export default EditAuthor
+export default EditAuthor;

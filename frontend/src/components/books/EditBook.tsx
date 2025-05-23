@@ -1,93 +1,85 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import BookForm from './BookForm'
-import { useMutation, useQuery } from '@apollo/client'
-import { GET_BOOK, GET_BOOKS, UPDATE_BOOK } from 'data/books'
-import useFilterByOptions from 'hooks/useFilterByOptions'
-import {
-  DEFAULT_BOOK_INPUT,
-  DEFAULT_SELECTED_AUTHOR_VALUE,
-  UpdateBook
-} from './constants'
-import { Option } from 'utils/types'
-import { useParams } from 'react-router-dom'
-import { ReactComponent as CloseIcon } from '../icons/close.svg'
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import BookForm from './BookForm';
+import { useMutation, useQuery } from '@apollo/client';
+import { GET_BOOK, GET_BOOKS, UPDATE_BOOK } from 'data/books';
+import useFilterByOptions from 'hooks/useFilterByOptions';
+import { DEFAULT_BOOK_INPUT, DEFAULT_SELECTED_AUTHOR_VALUE, UpdateBook } from './constants';
+import { Option } from 'utils/types';
+import { useParams } from 'react-router-dom';
+import { ReactComponent as CloseIcon } from '../icons/close.svg';
 
 function EditBook() {
-  const params = useParams()
-  const { id } = params
+  const params = useParams();
+  const { id } = params;
   const { data, error, loading } = useQuery(GET_BOOK, {
-    variables: { id }
-  })
-  const defaultBookState = useMemo(() => data?.getBook, [data])
+    variables: { id },
+  });
+  const defaultBookState = useMemo(() => data?.getBook, [data]);
+  console.log({ defaultBookState });
 
   const defaultAuthorOption = useMemo(
-    () => ({
-      label: defaultBookState?.author?.name,
-      value: defaultBookState?.author?.id
-    }),
+    () =>
+      defaultBookState?.authors?.map((author: { name: string; id: string }) => ({
+        label: author.name,
+        value: author.id,
+      })),
     [defaultBookState]
-  )
+  );
 
   const [book, setBook] = useState<UpdateBook>({
     id: Number(id) ?? 0,
-    ...DEFAULT_BOOK_INPUT
-  })
+    ...DEFAULT_BOOK_INPUT,
+  });
 
-  const [author, setAuthor] = useFilterByOptions(DEFAULT_SELECTED_AUTHOR_VALUE)
+  const [authors, setAuthors] = useFilterByOptions([]);
   useEffect(() => {
-    defaultBookState != null && setBook(defaultBookState)
-    defaultBookState != null && setAuthor(defaultAuthorOption)
-  }, [defaultAuthorOption, defaultBookState, setAuthor])
+    defaultBookState != null && setBook(defaultBookState);
+    defaultBookState != null && setAuthors(defaultAuthorOption);
+  }, [defaultAuthorOption, defaultBookState, setAuthors]);
 
-  const [
-    updateBook,
-    { data: submittedData, loading: isSubmitting, error: submitError, reset }
-  ] = useMutation(UPDATE_BOOK, {
-    refetchQueries: [
-      {
-        query: GET_BOOKS,
-        variables: {
-          title: '',
-          authorId: null,
-          yearPublished: null,
-          noOfPages: null
-        }
-      }
-    ]
-  })
+  const [updateBook, { data: submittedData, loading: isSubmitting, error: submitError, reset }] =
+    useMutation(UPDATE_BOOK, {
+      refetchQueries: [
+        {
+          query: GET_BOOKS,
+          variables: {
+            title: '',
+            authorIds: null,
+            yearPublished: null,
+            noOfPages: null,
+          },
+        },
+      ],
+    });
   const handleSubmit = useCallback(
     (e: React.FormEvent) => {
-      e.preventDefault()
+      e.preventDefault();
 
       updateBook({
-        variables: { ...book, updateBookId: id, authorId: author?.value }
-      })
+        variables: { ...book, updateBookId: id, authorIds: authors?.map((a) => a.value) },
+      });
     },
-    [author?.value, book, id, updateBook]
-  )
+    [authors, book, id, updateBook]
+  );
   const handleAuthorChange = useCallback(
-    (val: Option) => {
-      setAuthor(val)
+    (val: Option[]) => {
+      setAuthors(val);
     },
-    [setAuthor]
-  )
+    [setAuthors]
+  );
   const handleBookChange = useCallback(
     (name: string, value: number | string) => {
       setBook({
         ...book,
-        [name]: value
-      })
+        [name]: value,
+      });
     },
     [book]
-  )
+  );
 
   const renderSubmitMessage = () => {
     if (isSubmitting)
-      return (
-        <h4 className=" px-3 py-2 rounded flex text-stone-600 bg-amber-200">
-          Submitting...
-        </h4>
-      )
+      return <h4 className=" px-3 py-2 rounded flex text-stone-600 bg-amber-200">Submitting...</h4>;
     if (submitError)
       return (
         <h4 className="bg-rose-200 px-3 py-2 rounded flex text-stone-600">
@@ -99,7 +91,7 @@ function EditBook() {
             className="cursor-pointer fill-stone-600 hover:fill-stone-800"
           />
         </h4>
-      )
+      );
     if (submittedData)
       return (
         <h4 className="bg-teal-200 px-3 py-2 rounded flex text-stone-600">
@@ -111,30 +103,28 @@ function EditBook() {
             className="cursor-pointer fill-stone-600 hover:fill-stone-800"
           />
         </h4>
-      )
-    return <></>
-  }
-  
+      );
+    return <></>;
+  };
+
   if (loading) {
-    return <>Loading...</>
+    return <>Loading...</>;
   }
   if (error) {
-    return <>Error, Please refresh or try again later</>
+    return <>Error, Please refresh or try again later</>;
   }
   return (
     <>
       <BookForm
         handleSubmit={handleSubmit}
         book={book}
-        author={author}
+        authors={authors}
         handleAuthorChange={handleAuthorChange}
         handleBookChange={handleBookChange}
       />
-      <div className="flex justify-center items-center">
-        {renderSubmitMessage()}
-      </div>
+      <div className="flex justify-center items-center">{renderSubmitMessage()}</div>
     </>
-  )
+  );
 }
 
-export default EditBook
+export default EditBook;

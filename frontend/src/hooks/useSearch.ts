@@ -1,24 +1,21 @@
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useState } from 'react';
 
 function useSearch() {
-  const [searchText, setSearchText] = useState<string>('')
+  const [searchText, setSearchText] = useState<string>('');
 
-  const handleInputChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      setSearchText(event.target.value)
-    },
-    []
-  )
+  const handleInputChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchText(event.target.value);
+  }, []);
 
   const clearSearchText = useCallback(() => {
-    setSearchText('')
-  }, [])
+    setSearchText('');
+  }, []);
 
   return {
     searchText,
     handleInputChange,
-    clearSearchText
-  }
+    clearSearchText,
+  };
 }
 
-export default useSearch
+export default useSearch;
