@@ -97,6 +97,8 @@ export const typeDefs = gql`
       yearPublished: Int
       noOfPages: Int
     ): Book
+    updateAuthor(id: ID!, name: String!): Author
     deleteBook(id: ID!): Boolean
+    deleteAuthor(id: ID!): Boolean
   }
 `

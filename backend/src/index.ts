@@ -1,18 +1,31 @@
-import 'reflect-metadata'
-import './polyfills'
-import express from 'express'
 import { ApolloServer } from 'apollo-server-express'
+import express from 'express'
+import 'reflect-metadata'
 import { AppDataSource } from './data-source'
-import { typeDefs } from './schema'
+import { authMiddleware } from './middleware/auth'
+import { createLogger, loggerMiddleware } from './middleware/logger'
+import './polyfills'
 import { resolvers } from './resolvers'
+import { typeDefs } from './schema'
+import { MyContext } from './types/context'
 import { retryConnection } from './utils/retryConnection'
 
 const startServer = async () => {
   const app = express()
 
+  // Add middlewares
+  app.use(loggerMiddleware)
+  app.use(authMiddleware)
+
   const server = new ApolloServer({
     typeDefs,
-    resolvers
+    resolvers,
+    context: ({ req, res }): MyContext => ({
+      req,
+      res,
+      user: req.user,
+      logger: createLogger()
+    })
   })
 
   await server.start()
@@ -26,7 +39,6 @@ const startServer = async () => {
     console.log(`Server ready at http://localhost:4000${server.graphqlPath}`)
   })
 }
-
 startServer().catch((error) => {
   console.error('Failed to start the server:', error)
 })
