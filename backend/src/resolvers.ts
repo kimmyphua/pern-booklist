@@ -1,4 +1,4 @@
-import { Repository } from 'typeorm'
+import { In, Repository } from 'typeorm'
 import { AppDataSource } from './data-source'
 import { Author, Book } from './schema'
 import { MyContext } from './types/context'
@@ -19,11 +19,11 @@ export const resolvers = {
     },
     getBooks: async (_: any, __: any, context: MyContext) => {
       context.logger.info('Fetching all books')
-      return await bookRepository.find({ relations: ['author'] })
+      return await bookRepository.find({ relations: ['authors'] })
     },
     getBook: async (_: any, { id }: { id: number }, context: MyContext) => {
       context.logger.info('Fetching book by ID', { id })
-      return await bookRepository.findOne({ where: { id }, relations: ['author'] })
+      return await bookRepository.findOne({ where: { id }, relations: ['authors'] })
     },
     searchAuthors: async (_: any, { name }: { name?: string }) => {
       const query = authorRepository
@@ -36,12 +36,12 @@ export const resolvers = {
       _: any,
       {
         title,
-        authorId,
+        authorIds,
         yearPublished,
         noOfPages
       }: {
         title?: string
-        authorId?: number
+        authorIds?: number[]
         yearPublished?: {
           start?: number
           end?: number
@@ -52,12 +52,29 @@ export const resolvers = {
         }
       }
     ) => {
+      // First, find book IDs that match the author filter
+      let bookIds: number[] | undefined
+      if (authorIds && authorIds.length > 0) {
+        const matchingBooks = await bookRepository
+          .createQueryBuilder('book')
+          .innerJoin('book.authors', 'author')
+          .where('author.id IN (:...authorIds)', { authorIds })
+          .select('book.id')
+          .getMany()
+        bookIds = matchingBooks.map(book => book.id)
+      }
+
+      // Then, get all books with their authors, applying all filters
       const query = bookRepository
         .createQueryBuilder('book')
-        .leftJoinAndSelect('book.author', 'author')
-      if (title)
+        .leftJoinAndSelect('book.authors', 'authors')
+
+      if (bookIds) {
+        query.andWhere('book.id IN (:...bookIds)', { bookIds })
+      }
+      if (title) {
         query.andWhere('book.title ILIKE :title', { title: `%${title}%` })
-      if (authorId) query.andWhere('author.id = :authorId', { authorId })
+      }
 
       addRangeCondition(query, 'book.yearPublished', yearPublished)
       addRangeCondition(query, 'book.noOfPages', noOfPages)
@@ -74,12 +91,12 @@ export const resolvers = {
       _: any,
       {
         title,
-        authorId,
+        authorIds,
         yearPublished,
         noOfPages
       }: {
         title: string
-        authorId: number
+        authorIds: number[]
         yearPublished?: number
         noOfPages?: number
       },
@@ -90,17 +107,17 @@ export const resolvers = {
         throw new Error('Not authenticated')
       }
 
-      context.logger.info('Creating new book', { title, authorId })
+      context.logger.info('Creating new book', { title, authorIds })
 
-      const author = await authorRepository.findOne({ where: { id: authorId } })
-      if (!author) {
-        context.logger.error('Author not found', { authorId })
-        throw new Error('Author not found')
+      const authors = await authorRepository.findBy({ id: In(authorIds) })
+      if (authors.length !== authorIds.length) {
+        context.logger.error('Some authors not found', { authorIds })
+        throw new Error('Some authors not found')
       }
 
       const newBook = bookRepository.create({
         title,
-        author,
+        authors,
         yearPublished,
         noOfPages
       })
@@ -114,13 +131,13 @@ export const resolvers = {
       {
         id,
         title,
-        authorId,
+        authorIds,
         yearPublished,
         noOfPages
       }: {
         id: number
         title?: string
-        authorId?: number
+        authorIds?: number[]
         yearPublished?: number
         noOfPages?: number
       },
@@ -135,7 +152,7 @@ export const resolvers = {
 
       const book = await bookRepository.findOne({
         where: { id },
-        relations: ['author']
+        relations: ['authors']
       })
       if (!book) {
         context.logger.error('Book not found', { id })
@@ -143,15 +160,13 @@ export const resolvers = {
       }
 
       if (title) book.title = title
-      if (authorId) {
-        const author = await authorRepository.findOne({
-          where: { id: authorId }
-        })
-        if (!author) {
-          context.logger.error('Author not found', { authorId })
-          throw new Error('Author not found')
+      if (authorIds) {
+        const authors = await authorRepository.findBy({ id: In(authorIds) })
+        if (authors.length !== authorIds.length) {
+          context.logger.error('Some authors not found', { authorIds })
+          throw new Error('Some authors not found')
         }
-        book.author = author
+        book.authors = authors
       }
       if (yearPublished != null) book.yearPublished = yearPublished
       if (noOfPages != null) book.noOfPages = noOfPages
@@ -188,7 +203,7 @@ export const resolvers = {
     }
   },
   Book: {
-    author: async (book: Book) =>
-      await authorRepository.findOne({ where: { id: book.author.id } })
+    authors: async (book: Book) =>
+      await authorRepository.findBy({ id: In(book.authors.map(author => author.id)) })
   }
 }

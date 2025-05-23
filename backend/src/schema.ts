@@ -1,13 +1,12 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  ManyToOne,
-  OneToMany,
-  JoinColumn
-} from 'typeorm'
-import { ObjectType, Field, ID } from 'type-graphql'
 import { gql } from 'apollo-server-express'
+import { Field, ID, ObjectType } from 'type-graphql'
+import {
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  PrimaryGeneratedColumn
+} from 'typeorm'
 
 @ObjectType()
 @Entity()
@@ -20,7 +19,7 @@ export class Author {
   @Column()
   name!: string
 
-  @OneToMany(() => Book, (book) => book.author)
+  @ManyToMany(() => Book, (book) => book.authors)
   books!: Book[]
 }
 
@@ -35,9 +34,20 @@ export class Book {
   @Column()
   title!: string
 
-  @ManyToOne(() => Author, (author) => author.books)
-  @JoinColumn() // Ensures that the relationship is correctly mapped in the database
-  author!: Author
+  @ManyToMany(() => Author, (author) => author.books)
+  @JoinTable({
+    name: 'book_authors',
+    joinColumn: {
+      name: 'book_id',
+      referencedColumnName: 'id'
+    },
+    inverseJoinColumn: {
+      name: 'author_id',
+      referencedColumnName: 'id'
+    }
+  })
+  @Field(() => [Author])
+  authors!: Author[]
 
   @Field({ nullable: true })
   @Column({ nullable: true })
@@ -58,7 +68,7 @@ export const typeDefs = gql`
   type Book {
     id: ID!
     title: String!
-    author: Author!
+    authors: [Author]!
     yearPublished: Int
     noOfPages: Int
   }
@@ -76,7 +86,7 @@ export const typeDefs = gql`
     searchAuthors(name: String): [Author]
     searchBooks(
       title: String
-      authorId: ID
+      authorIds: [ID]
       yearPublished: RangeInput
       noOfPages: RangeInput
     ): [Book]
@@ -86,14 +96,14 @@ export const typeDefs = gql`
     createAuthor(name: String!): Author
     createBook(
       title: String!
-      authorId: ID!
+      authorIds: [ID]!
       yearPublished: Int
       noOfPages: Int
     ): Book
     updateBook(
       id: ID!
       title: String
-      authorId: ID
+      authorIds: [ID]
       yearPublished: Int
       noOfPages: Int
     ): Book

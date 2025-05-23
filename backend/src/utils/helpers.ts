@@ -5,12 +5,12 @@ export const addRangeCondition = (
   field: string,
   range?: { start?: number; end?: number }
 ) => {
-  if (range?.start !== undefined) {
+  if (range?.start != null) {
     query.andWhere(`${field} >= :${field}Start`, {
       [`${field}Start`]: range.start
     })
   }
-  if (range?.end !== undefined) {
+  if (range?.end != null) {
     query.andWhere(`${field} <= :${field}End`, { [`${field}End`]: range.end })
   }
 }

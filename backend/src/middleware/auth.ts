@@ -12,8 +12,10 @@ export const authMiddleware = async (
     // Mock user authentication
     // In a real app, you would validate the token from the Authorization header
     const authHeader = req.headers.authorization
+    console.log('Auth header:', authHeader) // Debug log
 
     if (!authHeader) {
+      console.log('No auth header found') // Debug log
       return next()
     }
 
@@ -21,13 +23,15 @@ export const authMiddleware = async (
     const mockUser: User = {
       id: 1,
       name: 'Test User',
-      role: 'USER'
+      role: 'ADMIN' // Changed to ADMIN for testing
     }
 
+    console.log('Setting user:', mockUser) // Debug log
     // Attach user to request
     req.user = mockUser
     next()
   } catch (error) {
+    console.error('Auth error:', error) // Debug log
     next(error)
   }
 }
